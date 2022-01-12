@@ -12,8 +12,9 @@ Proceed
 
     $ git clone git@github.com:Datahel/tabular-anonymizer.git
     $ pip install -e tabular-anonymizer
-    or
-    try $pip install https://github.com/Datahel/tabular-anonymizer.git
+    or try 
+    
+    $pip install https://github.com/Datahel/tabular-anonymizer.git
     when tabular-anonymizer is public repo
     
     $ conda install notebook ipykernel
