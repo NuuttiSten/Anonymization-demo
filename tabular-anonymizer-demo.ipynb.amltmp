@@ -268,6 +268,96 @@
           "logged": 1641300340356
         }
       }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Example: Generating semi-synthetic tidy data from the Mondrian-k -anonymized data\r\n",
+        "\r\n",
+        "You may have noticed, that the Mondrian-k -anonymized data is no longer tidy (each row contains an observation, each cell contains a single value). \r\n",
+        "Untidy data is difficult to utilize for analysis and ML. \r\n",
+        "Let's generate tidy samples from the anonymized dataset by bootstrapping.\r\n",
+        "Note that this data is now synthetic: the data points do not anymore link to individuals. However, the dataset should have similar statistical properties as the original one."
+      ],
+      "metadata": {
+        "nteract": {
+          "transient": {
+            "deleting": false
+          }
+        }
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# import numpy as np\r\n",
+        "# new dataframe for storing generated data\r\n",
+        "bootstrap_c = 1 # constant for tuning bootstrapping\r\n",
+        "value_range = ['age', 'hours-per-week']\r\n",
+        "numeric = ['capital-gain', 'capital-loss', 'label']\r\n",
+        "category_list = ['workclass', 'education', 'marital-status', 'relationship', 'sex']\r\n",
+        "colnames = df_anonymized.columns\r\n",
+        "df_gen = []#pd.DataFrame(columns = colnames)\r\n",
+        "df_gen\r\n",
+        "# iterate through anonymized data\r\n",
+        "for _, row in df_anonymized.head(10).iterrows(): # just 10 rows for example, you can try increasing the generated data\r\n",
+        "    # generate new samples from each row\r\n",
+        "    # tune bootstrap_c for bootstrapping\r\n",
+        "    for _ in range(int(row['label_count']*bootstrap_c)):\r\n",
+        "        new_row = [] # new sample\r\n",
+        "        for colname in colnames: # go through columns\r\n",
+        "            if colname in numeric: # just take the value as-is\r\n",
+        "                value = row[colname]\r\n",
+        "            elif colname in value_range: # sample from value range\r\n",
+        "                value_range = np.array(row[colname][0].split('-')).astype(int)\r\n",
+        "                value = np.random.rand()*(value_range[1]-value_range[0])+value_range[0]\r\n",
+        "            elif colname in category_list: # sample from list of alternatives\r\n",
+        "                value = np.random.choice(row[colname][0].split(','))\r\n",
+        "            else:\r\n",
+        "                # define alternative strategies\r\n",
+        "                pass\r\n",
+        "            new_row.append(value)\r\n",
+        "        #print(new_row)\r\n",
+        "        df_gen.append(new_row)\r\n",
+        "df_gen = pd.DataFrame(df_gen, columns=df_anonymized.columns)\r\n",
+        "df_gen = df_gen.sample(frac = 1)\r\n",
+        "\r\n",
+        "# Exercise:\r\n",
+        "# You can try plotting the old and new data\r\n",
+        "# what happens to the data quality?\r\n"
+      ],
+      "outputs": [],
+      "execution_count": null,
+      "metadata": {
+        "jupyter": {
+          "source_hidden": false,
+          "outputs_hidden": false
+        },
+        "nteract": {
+          "transient": {
+            "deleting": false
+          }
+        }
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Exercises: Anonymization and data quality\r\n",
+        "\r\n",
+        "1. Try plotting the data in a representative way before (df) and after anonymization & bootstrapping (df_gen). What happens?\r\n",
+        "\r\n",
+        "2. Try fitting some ML model to the data or part of it before and after anonymization & bootstrapping. What happens?\r\n",
+        "\r\n",
+        "3. Can you explain how anonymization can affect data & model quality?\r\n"
+      ],
+      "metadata": {
+        "nteract": {
+          "transient": {
+            "deleting": false
+          }
+        }
+      }
     }
   ],
   "metadata": {
